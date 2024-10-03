@@ -1,15 +1,10 @@
 #include <stdio.h>
 
 #include "parser.h"
-#include "lexer.h"
+#include "node.h"
 
 
 int main() {
-	yyscan_t scanner;
-	yylex_init(&scanner);
-
-	enum yytokentype token;
-
 	FILE* file = fopen("test", "r");
 
 	if (file == NULL) {
@@ -17,13 +12,8 @@ int main() {
 		return 1;
 	}
 	
-	yyset_in(file, scanner);
-	
-	while ((token = yylex(scanner))) {
-		/*printf("%s\n", yysymbol_name(token));*/
-	}
-
-	yylex_destroy(scanner);
+	struct Node* root = yyparse(file);
+	print_node(root, 0);
 
 	fclose(file);
 }
