@@ -74,6 +74,7 @@ static void print_node_bin(struct Node_bin* node, int offset) {
 		case (NODE_BIN_FUNCTION):     printf("function\n"); break;
 		case (NODE_BIN_ARG_DEFAULT):  printf("argument with default value\n"); break;
 		case (NODE_BIN_CALL):         printf("call\n"); break;
+		case (NODE_BIN_SET_VALUE):    printf("set value\n"); break;
 	}
 
 	print_node(node->left, offset + 1);
@@ -107,6 +108,7 @@ static void print_node_poly(struct Node_poly* node, int offset) {
 	switch (node->type) {
 		case (NODE_POLY_ARRAY): printf("array\n"); break;
 		case (NODE_POLY_ARGS): printf("arguments %d\n", node->epsilon); break;
+		case (NODE_POLY_SET): printf("set\n"); break;
 	}
 
 	for (int i = 0; i < node->childs_count; i++)

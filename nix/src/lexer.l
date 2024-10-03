@@ -70,6 +70,9 @@
                     }
                     return TOK_RCBR;
 }
+"["               { return TOK_LSBR; }
+"]"               { return TOK_RSBR; }
+"\."              { return TOK_DOT; }
 ","               { return TOK_COMMA; }
 ":"               { return TOK_COLON; }
 ";"               { return TOK_SEMICOLON; }

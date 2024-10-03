@@ -41,6 +41,7 @@ enum NodeBinType {
 	NODE_BIN_FUNCTION,
 	NODE_BIN_ARG_DEFAULT,
 	NODE_BIN_CALL,
+	NODE_BIN_SET_VALUE,
 };
 
 struct Node_bin {
@@ -88,6 +89,7 @@ struct Node_value {
 enum NodePolyType {
 	NODE_POLY_ARRAY,
 	NODE_POLY_ARGS,
+	NODE_POLY_SET,
 };
 
 struct Node_poly {

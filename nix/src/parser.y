@@ -39,6 +39,8 @@ struct Node* parser_root;
 	RBR         ")"
 	LCBR        "{"
 	RCBR        "}"
+	LSBR        "["
+	RSBR        "]"
 	DOT         "."
 	COMMA       ","
 	COLON       ":"
@@ -78,7 +80,7 @@ struct Node* parser_root;
 	PATH        "path"
 	PATH_PART   "path_part"
 
-%type <node> Start E String String_part Path Path_part Name args_set fargs farg
+%type <node> Start E String String_part Path Path_part Name args_set fargs farg set_args arr_args
 
 %start Start
 
@@ -121,6 +123,8 @@ E: E "+" E  { $$ = new_bin_node(NODE_BIN_SUM,         $1, $3); }
  | args_set ":" E %prec FUNC { $$ = new_bin_node(NODE_BIN_FUNCTION, $1, $3); }
  | ID ":" E %prec FUNC { $$ = new_bin_node(NODE_BIN_FUNCTION, $1, $3); }
  | E E %prec CALL { $$ = new_bin_node(NODE_BIN_CALL, $1, $2); }
+ | "{" set_args "}" { $$ = $2; }
+ | "[" arr_args "]" { $$ = $2; }
 
 Name: ID
     | Name "." ID { $$ = new_bin_node(NODE_BIN_SET_ACCESS, $1, $3); }
@@ -150,6 +154,16 @@ Path: Path_part PATH { $$ = new_bin_node(NODE_BIN_PATH_UNION, $1, $2); }
 
 Path_part: PATH_PART E RCBR { $$ = new_bin_node(NODE_BIN_PATH_UNION, $1, $2); }
          | Path_part E RCBR { $$ = new_bin_node(NODE_BIN_PATH_UNION, $1, $2); }
+
+set_args: Name "=" E ";" {
+              $$ = new_poly_node(NODE_POLY_SET, 1,
+                  new_bin_node(NODE_BIN_SET_VALUE, $1, $3));  }
+        | set_args Name "=" E ";" {
+              poly_node_append((struct Node_poly*)$$,
+                  new_bin_node(NODE_BIN_SET_VALUE, $2, $4)); }
+
+arr_args: E { $$ = new_poly_node(NODE_POLY_ARRAY, 1, $1);  }
+        | arr_args "," E { poly_node_append((struct Node_poly*)$$, $3); }
 
 %%
 
