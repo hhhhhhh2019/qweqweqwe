@@ -1,5 +1,6 @@
 #include "node.h"
 
+#include <stdarg.h>
 #include <stdio.h>
 
 
@@ -32,6 +33,22 @@ struct Node* new_value_node(enum NodeValueType type) {
 	return (struct Node*)node;
 }
 
+struct Node* new_poly_node(enum NodePolyType type, int count, ...) {
+	struct Node_poly* node = malloc(sizeof(struct Node_poly));
+	node->super.type = NODE_POLY;
+	node->type = type;
+	node->childs_count = count;
+	node->childs = malloc(sizeof(void*) * count);
+
+	va_list ptr;
+	va_start(ptr, count);
+	for (int i = 0; i < count; i++)
+		node->childs[i] = va_arg(ptr, struct Node*);
+	va_end(ptr);
+
+	return (struct Node*)node;
+}
+
 
 static void print_node_bin(struct Node_bin* node, int offset) {
 	switch (node->type) {
@@ -54,6 +71,9 @@ static void print_node_bin(struct Node_bin* node, int offset) {
 		case (NODE_BIN_ARR_ACCESS):   printf("array access\n"); break;
 		case (NODE_BIN_STRING_UNION): printf("string union\n"); break;
 		case (NODE_BIN_PATH_UNION):   printf("path union\n"); break;
+		case (NODE_BIN_FUNCTION):     printf("function\n"); break;
+		case (NODE_BIN_ARG_DEFAULT):  printf("argument with default value\n"); break;
+		case (NODE_BIN_CALL):         printf("call\n"); break;
 	}
 
 	print_node(node->left, offset + 1);
@@ -84,6 +104,19 @@ static void print_node_value(struct Node_value* node, int offset) {
 
 
 static void print_node_poly(struct Node_poly* node, int offset) {
+	switch (node->type) {
+		case (NODE_POLY_ARRAY): printf("array\n"); break;
+		case (NODE_POLY_ARGS): printf("arguments %d\n", node->epsilon); break;
+	}
+
+	for (int i = 0; i < node->childs_count; i++)
+		print_node(node->childs[i], offset + 1);
+}
+
+
+void poly_node_append(struct Node_poly* root, struct Node* node) {
+	root->childs = realloc(root->childs, sizeof(void*) * (++root->childs_count));
+	root->childs[root->childs_count - 1] = node;
 }
 
 

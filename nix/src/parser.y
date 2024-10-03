@@ -78,18 +78,18 @@ struct Node* parser_root;
 	PATH        "path"
 	PATH_PART   "path_part"
 
-%type <node> Start E String String_part Path Path_part Name
+%type <node> Start E String String_part Path Path_part Name args_set fargs farg
 
 %start Start
 
-//%precedence FUNC
+%precedence FUNC
 %left "&&" "||"
 %left "==" "!=" ">" ">=" "<" "<="
 %left "&" "|" "^"
 %left "+" "-"
 %left "*" "/"
-%precedence NEG INV
-//%precedence CALL
+%precedence NEG INV NOT
+%left CALL NUMBER ID STRING PATH
 
 %%
 
@@ -111,30 +111,33 @@ E: E "+" E  { $$ = new_bin_node(NODE_BIN_SUM,         $1, $3); }
  | E "|" E  { $$ = new_bin_node(NODE_BIN_BITWISE_OR,  $1, $3); }
  | E "^" E  { $$ = new_bin_node(NODE_BIN_BITWISE_XOR, $1, $3); }
  | "-" E %prec NEG { $$ = new_un_node(NODE_UN_NEG, $2); }
- | "!" E %prec INV { $$ = new_un_node(NODE_UN_LOGIC_INV, $2); }
+ | "!" E %prec NOT { $$ = new_un_node(NODE_UN_LOGIC_INV, $2); }
  | "~" E %prec INV { $$ = new_un_node(NODE_UN_BITWISE_INV, $2); }
  | "(" E ")" { $$ = $2; }
  | NUMBER
  | String
  | Path
  | Name
- //| fargs ":" E %prec FUNC { $$ = new_node(NODE_FUNC, 2); $$->childs[0] = $1; $$->childs[1] = $3; }
- //| ID ":" E %prec FUNC { $$ = new_node(NODE_FUNC, 2); $$->childs[0] = $1; $$->childs[1] = $3; }
- //| E E %prec CALL { $$ = new_node(NODE_CALL, 2); $$->childs[0] = $1; $$->childs[1] = $2; }
+ | args_set ":" E %prec FUNC { $$ = new_bin_node(NODE_BIN_FUNCTION, $1, $3); }
+ | ID ":" E %prec FUNC { $$ = new_bin_node(NODE_BIN_FUNCTION, $1, $3); }
+ | E E %prec CALL { $$ = new_bin_node(NODE_BIN_CALL, $1, $2); }
 
 Name: ID
     | Name "." ID { $$ = new_bin_node(NODE_BIN_SET_ACCESS, $1, $3); }
 
-//fargs: "{" farg "}" { $$ = $2; }
-//     | "{" farg "," EPSILON "}" { $$ = $2; $$->epsilon = 1; }
-//     | "{" EPSILON "}" { $$ = new_node(NODE_FARGS, 0); $$->epsilon = 1; }
-//     | "{" farg "," "}" { $$ = $2; }
-//     | "{" "}" { $$ = new_node(NODE_FARGS, 0); }
+args_set: "{" fargs "}" { $$ = $2; }
+        | "{" fargs "," "}" { $$ = $2; }
+        | "{" fargs "," EPSILON "}" { $$ = $2;
+                                      ((struct Node_poly*)$$)->epsilon = 1; }
+        | "{" EPSILON "}" { $$ = new_poly_node(NODE_POLY_ARGS, 0);
+                            ((struct Node_poly*)$$)->epsilon = 1; }
+        | "{" "}" { $$ = new_poly_node(NODE_POLY_ARGS, 0); }
 
-//farg: ID { $$ = new_node(NODE_FARG, 2); $$->childs[0] = $1; $$->childs[1] = NULL; }
-//    | ID "?" E { $$ = new_node(NODE_FARG, 2); $$->childs[0] = $1; $$->childs[1] = $3; }
-//    | farg "," ID { $$ = new_node(NODE_FARG, 3); $$->childs[0] = $3; $$->childs[1] = NULL; $$->childs[2] = $1; }
-//    | farg "," ID "?" E { $$ = new_node(NODE_FARG, 3); $$->childs[0] = $3; $$->childs[1] = $5; $$->childs[2] = $1; }
+fargs: farg { $$ = new_poly_node(NODE_POLY_ARGS, 1, $1); }
+     | fargs "," farg { poly_node_append((struct Node_poly*)$$, $3); }
+
+farg: ID
+    | ID "?" E { $$ = new_bin_node(NODE_BIN_ARG_DEFAULT, $1, $3); }
 
 String: String_part STRING { $$ = new_bin_node(NODE_BIN_STRING_UNION, $1, $2); }
       | STRING

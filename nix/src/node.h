@@ -38,6 +38,9 @@ enum NodeBinType {
 	NODE_BIN_ARR_ACCESS,
 	NODE_BIN_STRING_UNION,
 	NODE_BIN_PATH_UNION,
+	NODE_BIN_FUNCTION,
+	NODE_BIN_ARG_DEFAULT,
+	NODE_BIN_CALL,
 };
 
 struct Node_bin {
@@ -84,6 +87,7 @@ struct Node_value {
 
 enum NodePolyType {
 	NODE_POLY_ARRAY,
+	NODE_POLY_ARGS,
 };
 
 struct Node_poly {
@@ -91,6 +95,7 @@ struct Node_poly {
 	enum NodePolyType type;
 	unsigned int childs_count;
 	struct Node** childs;
+	char epsilon; // for function arguments
 };
 
 
@@ -98,7 +103,9 @@ struct Node* new_node();
 struct Node* new_bin_node(enum NodeBinType, struct Node*, struct Node*);
 struct Node* new_un_node(enum NodeUnType, struct Node*);
 struct Node* new_value_node(enum NodeValueType);
-/*struct Node* new_poly_node*/
+struct Node* new_poly_node(enum NodePolyType, int, ...);
+
+void poly_node_append(struct Node_poly*, struct Node*);
 
 void print_node(struct Node*, int);
 
