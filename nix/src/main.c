@@ -5,7 +5,7 @@
 
 
 int main() {
-	FILE* file = fopen("test", "r");
+	FILE* file = fopen("test/repos/os/default.nix", "r");
 
 	if (file == NULL) {
 		perror("fopen");
@@ -13,7 +13,6 @@ int main() {
 	}
 	
 	struct Node* root = yyparse(file);
-	/*print_node(root, 0);*/
 	index_node(root, 0);
 
 	printf("digraph 1 {\n");

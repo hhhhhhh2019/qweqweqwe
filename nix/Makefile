@@ -5,7 +5,7 @@ FLEX  = flex
 CC    = gcc
 LD    = gcc
 
-BISON_FLAGS = --color=always -Wall -fcaret -d
+BISON_FLAGS = --color=always -Wall -fcaret -d -Wcex
 FLEX_FLAGS =
 CC_FLAGS = -ggdb3
 LD_FLAGS = -ggdb3

@@ -11,6 +11,7 @@ enum NodeType {
 	NODE_UN,
 	NODE_VALUE,
 	NODE_POLY,
+	NODE_TRE,
 };
 
 struct Node {
@@ -105,11 +106,25 @@ struct Node_poly {
 };
 
 
+enum NodeTreType {
+	NODE_TRE_IF,
+};
+
+struct Node_tre {
+	struct Node super;
+	enum NodeTreType type;
+	struct Node* first;
+	struct Node* second;
+	struct Node* third;
+};
+
+
 struct Node* new_node();
 struct Node* new_bin_node(enum NodeBinType, struct Node*, struct Node*);
 struct Node* new_un_node(enum NodeUnType, struct Node*);
 struct Node* new_value_node(enum NodeValueType);
 struct Node* new_poly_node(enum NodePolyType, int, ...);
+struct Node* new_tre_node(enum NodeTreType, struct Node*, struct Node*, struct Node*);
 
 void poly_node_append(struct Node_poly*, struct Node*);
 

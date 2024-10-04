@@ -49,6 +49,17 @@ struct Node* new_poly_node(enum NodePolyType type, int count, ...) {
 	return (struct Node*)node;
 }
 
+struct Node* new_tre_node(enum NodeTreType type, struct Node* first, struct Node* second, struct Node* third) {
+	struct Node_tre* node = malloc(sizeof(struct Node_tre));
+	node->super.type = NODE_TRE;
+	node->type = type;
+	node->first = first;
+	node->second = second;
+	node->third = third;
+
+	return (struct Node*)node;
+}
+
 
 static void print_node_bin(struct Node_bin* node, int offset) {
 	switch (node->type) {
@@ -76,7 +87,7 @@ static void print_node_bin(struct Node_bin* node, int offset) {
 		case NODE_BIN_CALL:         printf("call\n"); break;
 		case NODE_BIN_SET_VALUE:    printf("set value\n"); break;
 		case NODE_BIN_WITH:         printf("with\n"); break;
-    case NODE_BIN_LET:            printf("let\n"); break;
+    case NODE_BIN_LET:          printf("let\n"); break;
 	}
 
   print_node(node->left, offset + 1);
@@ -125,6 +136,17 @@ void poly_node_append(struct Node_poly* root, struct Node* node) {
 }
 
 
+static void print_node_tre(struct Node_tre* node, int offset) {
+	switch (node->type) {
+		case NODE_TRE_IF: printf("if\n"); break;
+	}
+
+	print_node(node->first, offset + 1);
+	print_node(node->second, offset + 1);
+	print_node(node->third, offset + 1);
+}
+
+
 void print_node(struct Node* node, int offset) {
 	for (int i = 0; i < offset; i++)
 		printf("  ");
@@ -140,6 +162,7 @@ void print_node(struct Node* node, int offset) {
 		case NODE_UN:    print_node_un((struct Node_un*)node, offset); break;
 		case NODE_VALUE: print_node_value((struct Node_value*)node, offset); break;
 		case NODE_POLY:  print_node_poly((struct Node_poly*)node, offset); break;
+		case NODE_TRE:   print_node_tre((struct Node_tre*)node, offset); break;
 	}
 }
 
@@ -158,6 +181,11 @@ int index_node(struct Node* node, int id) {
 		case NODE_POLY:
 			for (int i = 0; i < ((struct Node_poly*)node)->childs_count; i++)
 				id = index_node(((struct Node_poly*)node)->childs[i], id);
+			break;
+		case NODE_TRE:
+			id = index_node(((struct Node_tre*)node)->first, id);
+			id = index_node(((struct Node_tre*)node)->second, id);
+			id = index_node(((struct Node_tre*)node)->third, id);
 			break;
 	}
 
@@ -243,6 +271,19 @@ static void node_poly_to_dot(struct Node_poly* node) {
 }
 
 
+static void node_tre_to_dot(struct Node_tre* node) {
+	switch (node->type) {
+		case NODE_TRE_IF: printf(" [label=\"if\"]\n");
+	}
+
+	printf("%d -> { %d %d %d }\n", node->super.id, node->first->id, node->second->id, node->third->id);
+
+	node_to_dot(node->first);
+	node_to_dot(node->second);
+	node_to_dot(node->third);
+}
+
+
 void node_to_dot(struct Node* node) {
 	printf("%d", node->id);
 
@@ -252,5 +293,6 @@ void node_to_dot(struct Node* node) {
 		case NODE_UN:    node_un_to_dot((struct Node_un*)node); break;
 		case NODE_BIN:   node_bin_to_dot((struct Node_bin*)node); break;
 		case NODE_POLY:  node_poly_to_dot((struct Node_poly*)node); break;
+		case NODE_TRE:   node_tre_to_dot((struct Node_tre*)node); break;
 	}
 }

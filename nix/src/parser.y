@@ -130,6 +130,7 @@ E: E "+" E  { $$ = new_bin_node(NODE_BIN_SUM,         $1, $3); }
  | "[" "]" { $$ = new_poly_node(NODE_POLY_ARRAY, 0); }
  | "with" Name ";" E { $$ = new_bin_node(NODE_BIN_WITH, $2, $4); }
  | "let" set_args "in" E { $$ = new_bin_node(NODE_BIN_LET, $2, $4); }
+ | "if" E "then" E "else" E { $$ = new_tre_node(NODE_TRE_IF, $2, $4, $6); }
 
 Name: ID
     | Name "." ID { $$ = new_bin_node(NODE_BIN_SET_ACCESS, $1, $3); }
