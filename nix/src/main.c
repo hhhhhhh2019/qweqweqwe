@@ -13,7 +13,12 @@ int main() {
 	}
 	
 	struct Node* root = yyparse(file);
-	print_node(root, 0);
+	/*print_node(root, 0);*/
+	index_node(root, 0);
+
+	printf("digraph 1 {\n");
+	node_to_dot(root);
+	printf("}\n");
 
 	fclose(file);
 }

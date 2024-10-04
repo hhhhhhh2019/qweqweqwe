@@ -15,6 +15,7 @@ enum NodeType {
 
 struct Node {
 	enum NodeType type;
+	int id;
 };
 
 
@@ -42,6 +43,8 @@ enum NodeBinType {
 	NODE_BIN_ARG_DEFAULT,
 	NODE_BIN_CALL,
 	NODE_BIN_SET_VALUE,
+	NODE_BIN_WITH,
+	NODE_BIN_LET,
 };
 
 struct Node_bin {
@@ -56,6 +59,7 @@ enum NodeUnType {
 	NODE_UN_NEG,
 	NODE_UN_LOGIC_INV,
 	NODE_UN_BITWISE_INV,
+	NODE_UN_IMPORT,
 };
 
 struct Node_un {
@@ -110,6 +114,9 @@ struct Node* new_poly_node(enum NodePolyType, int, ...);
 void poly_node_append(struct Node_poly*, struct Node*);
 
 void print_node(struct Node*, int);
+
+int index_node(struct Node*, int);
+void node_to_dot(struct Node*);
 
 
 #endif

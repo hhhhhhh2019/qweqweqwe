@@ -124,10 +124,17 @@ E: E "+" E  { $$ = new_bin_node(NODE_BIN_SUM,         $1, $3); }
  | ID ":" E %prec FUNC { $$ = new_bin_node(NODE_BIN_FUNCTION, $1, $3); }
  | E E %prec CALL { $$ = new_bin_node(NODE_BIN_CALL, $1, $2); }
  | "{" set_args "}" { $$ = $2; }
+ | "{" "}" { $$ = new_poly_node(NODE_POLY_SET, 0); }
  | "[" arr_args "]" { $$ = $2; }
+ | "[" arr_args "," "]" { $$ = $2; }
+ | "[" "]" { $$ = new_poly_node(NODE_POLY_ARRAY, 0); }
+ | "with" Name ";" E { $$ = new_bin_node(NODE_BIN_WITH, $2, $4); }
+ | "let" set_args "in" E { $$ = new_bin_node(NODE_BIN_LET, $2, $4); }
 
 Name: ID
     | Name "." ID { $$ = new_bin_node(NODE_BIN_SET_ACCESS, $1, $3); }
+    | Name "." String { $$ = new_bin_node(NODE_BIN_SET_ACCESS, $1, $3); }
+    | Name "." Path { $$ = new_bin_node(NODE_BIN_SET_ACCESS, $1, $3); }
 
 args_set: "{" fargs "}" { $$ = $2; }
         | "{" fargs "," "}" { $$ = $2; }
@@ -156,11 +163,17 @@ Path_part: PATH_PART E RCBR { $$ = new_bin_node(NODE_BIN_PATH_UNION, $1, $2); }
          | Path_part E RCBR { $$ = new_bin_node(NODE_BIN_PATH_UNION, $1, $2); }
 
 set_args: Name "=" E ";" {
-              $$ = new_poly_node(NODE_POLY_SET, 1,
-                  new_bin_node(NODE_BIN_SET_VALUE, $1, $3));  }
+            $$ = new_poly_node(NODE_POLY_SET, 1,
+                new_bin_node(NODE_BIN_SET_VALUE, $1, $3));  }
         | set_args Name "=" E ";" {
-              poly_node_append((struct Node_poly*)$$,
-                  new_bin_node(NODE_BIN_SET_VALUE, $2, $4)); }
+            poly_node_append((struct Node_poly*)$$,
+                new_bin_node(NODE_BIN_SET_VALUE, $2, $4)); }
+        | "import" "path" ";" {
+            $$ = new_poly_node(NODE_POLY_SET, 1,
+                new_un_node(NODE_UN_IMPORT, $2));  }
+        | set_args "import" "path" ";" {
+            poly_node_append((struct Node_poly*)$$,
+                new_un_node(NODE_UN_IMPORT, $3));  }
 
 arr_args: E { $$ = new_poly_node(NODE_POLY_ARRAY, 1, $1);  }
         | arr_args "," E { poly_node_append((struct Node_poly*)$$, $3); }
