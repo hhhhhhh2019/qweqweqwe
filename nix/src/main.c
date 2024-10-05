@@ -5,7 +5,7 @@
 
 
 int main() {
-	FILE* file = fopen("test/repos/os/default.nix", "r");
+	FILE* file = fopen("test/repos/os/pkgs/test.nix", "r");
 
 	if (file == NULL) {
 		perror("fopen");

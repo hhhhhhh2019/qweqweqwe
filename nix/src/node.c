@@ -101,6 +101,7 @@ static void print_node_un(struct Node_un* node, int offset) {
 		case NODE_UN_LOGIC_INV:   printf("logic inverse\n"); break;
 		case NODE_UN_BITWISE_INV: printf("bitwise inverse\n"); break;
 		case NODE_UN_IMPORT:      printf("import\n"); break;
+		case NODE_UN_INHERIT:     printf("inherit\n"); break;
 	}
 
 	print_node(node->child, offset + 1);
@@ -210,6 +211,7 @@ static void node_un_to_dot(struct Node_un* node) {
 		case NODE_UN_LOGIC_INV:   printf(" [label=\"logic inverse\"]\n"); break;
 		case NODE_UN_BITWISE_INV: printf(" [label=\"bitwise inverse\"]\n"); break;
 		case NODE_UN_IMPORT:      printf(" [label=\"import\"]\n"); break;
+		case NODE_UN_INHERIT:     printf(" [label=\"inherit\"]\n"); break;
 	}
 
 	printf("%d -> { %d }\n", node->super.id, node->child->id);

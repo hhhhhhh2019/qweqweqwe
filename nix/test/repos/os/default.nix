@@ -1,3 +1,4 @@
-{ ... }: {
-	a = if b < 2 then 1 else 2;
+{ system ? builtins.currentSystem }: let
+	libs = import './libs';
+in {
 }

@@ -61,6 +61,7 @@ enum NodeUnType {
 	NODE_UN_LOGIC_INV,
 	NODE_UN_BITWISE_INV,
 	NODE_UN_IMPORT,
+	NODE_UN_INHERIT,
 };
 
 struct Node_un {

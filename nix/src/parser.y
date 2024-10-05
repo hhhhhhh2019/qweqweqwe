@@ -131,6 +131,7 @@ E: E "+" E  { $$ = new_bin_node(NODE_BIN_SUM,         $1, $3); }
  | "with" Name ";" E { $$ = new_bin_node(NODE_BIN_WITH, $2, $4); }
  | "let" set_args "in" E { $$ = new_bin_node(NODE_BIN_LET, $2, $4); }
  | "if" E "then" E "else" E { $$ = new_tre_node(NODE_TRE_IF, $2, $4, $6); }
+ | "import" Path { $$ = new_un_node(NODE_UN_IMPORT, $2); }
 
 Name: ID
     | Name "." ID { $$ = new_bin_node(NODE_BIN_SET_ACCESS, $1, $3); }
@@ -175,6 +176,14 @@ set_args: Name "=" E ";" {
         | set_args "import" "path" ";" {
             poly_node_append((struct Node_poly*)$$,
                 new_un_node(NODE_UN_IMPORT, $3));  }
+        | "inherit" Path ";" {
+            $$ = new_poly_node(NODE_POLY_SET, 1,
+                new_un_node(NODE_UN_INHERIT, $2));
+        }
+        | set_args "inherit" Name ";" {
+            poly_node_append((struct Node_poly*)$$,
+                new_un_node(NODE_UN_INHERIT, $3));
+        }
 
 arr_args: E { $$ = new_poly_node(NODE_POLY_ARRAY, 1, $1);  }
         | arr_args "," E { poly_node_append((struct Node_poly*)$$, $3); }

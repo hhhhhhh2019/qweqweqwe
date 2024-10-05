@@ -61,12 +61,26 @@
                 node->path[len + 1] = 0;
 }
 <PATH><<EOF>> { printf("path error\n"); return TOK_YYerror; }
-\''                  { printf("long string start\n"); PUSH_STATE(LONG_STRING) }
-<LONG_STRING>"${"    { printf("eval start\n"); PUSH_STATE(DEFAULT) }
-<LONG_STRING>''      { POP_STATE() printf("long string end\n"); }
-<LONG_STRING>\\.     { printf("long string data: %s\n", yytext); }
-<LONG_STRING>.       { printf("long string data: %s\n", yytext); }
-<LONG_STRING><<EOF>> { printf("long string error\n"); }
+\''                  { yylval->node = new_value_node(NODE_VAL_STRING);
+                       struct Node_value* node = (struct Node_value*)yylval->node;
+                       node->string = calloc(1, 1);
+                       PUSH_STATE(LONG_STRING) }
+<LONG_STRING>"${"    { PUSH_STATE(DEFAULT) return TOK_STRING_PART; }
+<LONG_STRING>''      { POP_STATE() return TOK_STRING; }
+<LONG_STRING>\\.     { struct Node_value* node = (struct Node_value*)yylval->node;
+                       int len = strlen(node->string);
+                       node->string = realloc(node->string, len + 3);
+                       node->string[len + 0] = yytext[0];
+                       node->string[len + 1] = yytext[1];
+                       node->string[len + 2] = 0;
+}
+<LONG_STRING>.       { struct Node_value* node = (struct Node_value*)yylval->node;
+                       int len = strlen(node->string);
+                       node->string = realloc(node->string, len + 2);
+                       node->string[len + 0] = yytext[0];
+                       node->string[len + 1] = 0;
+}
+<LONG_STRING><<EOF>> { printf("long string error\n"); return TOK_YYerror; }
 "+"               { return TOK_PLUS; }
 "-"               { return TOK_MINUS; }
 "*"               { return TOK_STAR; }
