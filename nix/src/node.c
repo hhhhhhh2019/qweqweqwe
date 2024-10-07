@@ -5,7 +5,10 @@
 
 
 struct Node* new_node() {
-	return NULL;
+	struct Node* node = malloc(sizeof(struct Node));
+	node->type = NODE_EMPTY;
+
+	return node;
 }
 
 struct Node* new_bin_node(enum NodeBinType type, struct Node* left, struct Node* right) {
@@ -169,6 +172,8 @@ void print_node(struct Node* node, int offset) {
 
 
 int index_node(struct Node* node, int id) {
+	if (node == NULL) return id;
+
 	node->id = id++;
 
 	switch (node->type) {
@@ -287,6 +292,8 @@ static void node_tre_to_dot(struct Node_tre* node) {
 
 
 void node_to_dot(struct Node* node) {
+	if (node == NULL) return;
+
 	printf("%d", node->id);
 
 	switch (node->type) {

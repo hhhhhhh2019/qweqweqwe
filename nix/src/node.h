@@ -103,7 +103,7 @@ struct Node_poly {
 	enum NodePolyType type;
 	unsigned int childs_count;
 	struct Node** childs;
-	char epsilon; // for function arguments
+	char epsilon; // for function arguments, recursion for sets
 };
 
 

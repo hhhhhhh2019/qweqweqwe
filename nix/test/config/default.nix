@@ -9,9 +9,10 @@
 		system = "x86_64-linux";
 	in {
 		test.enable = true;
+		a = x: x + 2;
 
-		packages = with os; [
-			test_pkg,
+		packages = with os.pkgs; [
+			gcc,
 		];
-	}
+	};
 }

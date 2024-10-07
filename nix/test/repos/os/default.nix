@@ -1,4 +1,8 @@
-{ system ? builtins.currentSystem }: let
-	libs = import './libs';
-in {
+{
+	system ? builtins.currentSystem,
+}: rec {
+	pkgs = import './pkgs' self;
+	generate = { config }: {
+
+	};
 }
