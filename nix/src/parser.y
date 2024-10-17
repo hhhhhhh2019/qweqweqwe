@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include "node.h"
+#include "eval.h"
 
 }
 
@@ -183,11 +184,9 @@ Path_part: PATH_PART E RCBR { $$ = new_bin_node(NODE_BIN_PATH_UNION, $1, $2); }
          | PATH_PART error RCBR { $$ = new_bin_node(NODE_BIN_PATH_UNION, $1, new_node()); }
 
 set_args: Name "=" E ";" {
-            $$ = new_poly_node(NODE_POLY_SET, 1,
-                new_bin_node(NODE_BIN_SET_VALUE, $1, $3)); }
-        | set_args Name "=" E ";" {
-            poly_node_append((struct Node_poly*)$$,
-                new_bin_node(NODE_BIN_SET_VALUE, $2, $4)); }
+            $$ = new_poly_node(NODE_POLY_SET, 0);
+            set_set($$, $1, $3); }
+        | set_args Name "=" E ";" { $$ = $1; set_set($$, $2, $4); }
         | "import" "path" ";" {
             $$ = new_poly_node(NODE_POLY_SET, 1,
                 new_un_node(NODE_UN_IMPORT, $2)); }

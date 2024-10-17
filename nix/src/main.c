@@ -13,11 +13,16 @@ int main() {
 	}
 	
 	struct Node* root = yyparse(file);
+	fclose(file);
+
+	if (root == NULL) return 1;
+
 	index_node(root, 0);
 
 	printf("digraph 1 {\n");
 	node_to_dot(root);
 	printf("}\n");
 
-	fclose(file);
+	/*Node* output_call = new_bin_node(NODE_BIN_CALL,*/
+	/*    root);*/
 }

@@ -259,11 +259,29 @@ static void node_bin_to_dot(struct Node_bin* node) {
 }
 
 
+static void node_set_to_dot(struct Node_poly* node) {
+	printf(" [label=\"set\"]\n");
+
+	printf("%d -> { ", node->super.id);
+
+	for (int i = 0; i < node->childs_count; i++)
+		printf("%d ", node->childs[i]->id);
+
+	printf("}\n");
+
+	for (int i = 0; i < node->childs_count; i++) {
+		struct Node_set_elem* elem = (struct Node_set_elem*)node->childs[i];
+		printf("%d [label=\"%s\"]\n", elem->super.id, elem->name);
+		printf("%d -> %d\n", elem->super.id, elem->node->id);
+		node_to_dot(elem->node);
+	}
+}
+
 static void node_poly_to_dot(struct Node_poly* node) {
 	switch (node->type) {
 		case NODE_POLY_ARRAY: printf(" [label=\"array\"]\n"); break;
 		case NODE_POLY_ARGS:  printf(" [label=\"arguments\"]\n"); break;
-		case NODE_POLY_SET:   printf(" [label=\"set\"]\n"); break;
+		case NODE_POLY_SET:   node_set_to_dot(node); return;
 	}
 
 	printf("%d -> { ", node->super.id);

@@ -102,8 +102,14 @@ struct Node_poly {
 	struct Node super;
 	enum NodePolyType type;
 	unsigned int childs_count;
-	struct Node** childs;
-	char epsilon; // for function arguments, recursion for sets
+	struct Node** childs; // Node_set_elem** for set
+	char epsilon; // for function arguments, recursion for set
+};
+
+struct Node_set_elem {
+	struct Node super;
+	char* name;
+	struct Node* node;
 };
 
 

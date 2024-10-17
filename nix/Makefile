@@ -13,7 +13,7 @@ LD_FLAGS = -ggdb3
 
 all: src/parser.c src/lexer.c build/$(OUT)
 
-build/$(OUT): build/parser.o build/lexer.o build/main.o build/node.o
+build/$(OUT): build/parser.o build/lexer.o build/main.o build/node.o build/eval.o
 	$(LD) $(LD_FLAGS) -o build/$(OUT) $^
 
 build/%.o: src/%.c

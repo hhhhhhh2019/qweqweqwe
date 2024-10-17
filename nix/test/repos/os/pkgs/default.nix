@@ -1,4 +1,4 @@
-{ self }: {
+{ pkgs }: {
 	test = stdlib.mkDerivation {
 		name = "test";
 		version = "0.0.1";
@@ -8,9 +8,9 @@
 			sha256 = "qweqweqweqweqweqweqwe";
 		};
 
-		dependencies = [ self.pkgs.gnumake, self.pkgs.libtest ];
+		dependencies = with pkgs; [ gnumake, libtest ];
 
-		buildInput = [ self.pkgs.gcc ];
+		buildInput = with pkgs; [ gcc ];
 		build = ''
 			make
 			make install prefix=${output}
@@ -19,6 +19,13 @@
 		install = ''
 			ln -sf ${output}/bin/test /bin/test
 		'';
+		
+		files = config: {
+			'${output}/etc/test.conf' = ''
+				name = ${config.name}
+				${config.config or ""}
+			'';
+		}
 	};
 
 	gcc = stdlib.mkDerivation {
@@ -30,7 +37,7 @@
 			sha256 = "ewqewqewqewqewqewqewq";
 		};
 
-		buildInput = [ self.pkgs.gnumake ];
+		buildInput = with pkgs; [ gnumake ];
 		build = ''
 			./configure prefix=${output}
 			make
@@ -51,7 +58,7 @@
 			sha256 = "weqweqweqweqweqweqweqweq";
 		};
 
-		buildInput = [ ];
+		buildInput = with pkgs; [ ];
 		build = ''
 			./build.sh
 			./install.sh prefix=${output}
@@ -71,7 +78,7 @@
 			sha256 = "weqweqweqweqweqweqweqweq";
 		};
 
-		buildInput = [ self.pkgs.gnumake ];
+		buildInput = with pkgs; [ gnumake ];
 		build = ''
 			make
 			make install prefix=${output}
